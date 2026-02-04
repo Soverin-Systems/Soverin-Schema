@@ -1,0 +1,225 @@
+{
+  "$id": "jsonflow-frontend.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["identity", "engine", "services", "ui"],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "required": ["active", "keys", "events"],
+      "properties": {
+        "active": {
+          "type": "object",
+          "required": ["did", "address", "publicKey", "status"],
+          "properties": {
+            "did": { "type": "string" },
+            "address": { "type": "string" },
+            "publicKey": { "type": "string" },
+            "status": { "enum": ["active", "rotating", "revoked"] },
+            "signingKey": { "type": "string", "pattern": "^vault://.*" }
+          }
+        },
+        "keys": {
+          "type": "object",
+          "properties": {
+            "signing": { "type": "string", "pattern": "^vault://.*" },
+            "encryption": { "type": "string", "pattern": "^vault://.*" },
+            "fhePublic": { "type": "string", "pattern": "^vault://.*" }
+          }
+        },
+        "events": {
+          "type": "object",
+          "properties": {
+            "stream": { "const": "identity://events" },
+            "persist": { "type": "boolean" },
+            "retention": { "type": "string", "pattern": "^[0-9]+d$" }
+          }
+        }
+      }
+    },
+
+    "engine": {
+      "type": "object",
+      "required": ["mode", "clock", "executor", "receipts"],
+      "properties": {
+        "mode": { "enum": ["local", "distributed"] },
+        "clock": {
+          "type": "object",
+          "properties": {
+            "pulseIntervalMs": { "type": "integer", "minimum": 10 },
+            "driftToleranceMs": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "executor": {
+          "type": "object",
+          "properties": {
+            "sandbox": { "type": "boolean" },
+            "maxParallelSteps": { "type": "integer", "minimum": 1 },
+            "maxMemoryMB": { "type": "integer", "minimum": 512 }
+          }
+        },
+        "receipts": {
+          "type": "object",
+          "properties": {
+            "store": { "const": "content-addressed" },
+            "verifyOnLoad": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "services": {
+      "type": "object",
+      "properties": {
+        "ipfs": {
+          "type": "object",
+          "properties": {
+            "status": { "enum": ["running", "stopped", "degraded"] },
+            "peerId": { "type": "string" },
+            "storageUsed": { "type": "number" },
+            "storageLimit": { "type": "number" },
+            "pubsub": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "ollama": {
+          "type": "object",
+          "properties": {
+            "status": { "enum": ["running", "stopped"] },
+            "activeModel": { "type": "string" },
+            "gpuEnabled": { "type": "boolean" }
+          }
+        },
+        "wallet": {
+          "type": "object",
+          "properties": {
+            "state": { "enum": ["locked", "unlocked"] },
+            "activeChain": { "type": "string" },
+            "pendingTx": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "txId": { "type": "string" },
+                  "status": { "enum": ["pending", "confirmed", "failed"] }
+                }
+              }
+            }
+          }
+        },
+        "p2p": {
+          "type": "object",
+          "properties": {
+            "status": { "enum": ["online", "offline"] },
+            "peers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "peerId": { "type": "string" },
+                  "latencyMs": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "workflows": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "state": {
+              "enum": ["idle", "running", "paused", "failed", "completed"]
+            },
+            "currentStep": { "type": "string" }
+          }
+        },
+        "designer": {
+          "type": "object",
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "type"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "type": { "type": "string" },
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "config": { "type": "object" }
+                }
+              }
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "ui": {
+      "type": "object",
+      "required": ["shell", "studio"],
+      "properties": {
+        "shell": {
+          "type": "object",
+          "properties": {
+            "mode": { "const": "desktop" },
+            "theme": { "enum": ["dark", "light"] },
+            "panels": {
+              "type": "object",
+              "properties": {
+                "left": { "type": "array", "items": { "type": "string" } },
+                "center": { "type": "array", "items": { "type": "string" } },
+                "right": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "studio": {
+          "type": "object",
+          "properties": {
+            "canvas": {
+              "type": "object",
+              "properties": {
+                "grid": { "type": "boolean" },
+                "snap": { "type": "boolean" },
+                "minZoom": { "type": "number" },
+                "maxZoom": { "type": "number" }
+              }
+            },
+            "execution": {
+              "type": "object",
+              "properties": {
+                "liveLogs": { "type": "boolean" },
+                "highlightActiveStep": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "security": {
+      "type": "object",
+      "properties": {
+        "encryptLocalStorage": { "type": "boolean" },
+        "autoLockMs": { "type": "integer" },
+        "requireSignatureForExecution": { "type": "boolean" }
+      }
+    }
+  }
+}

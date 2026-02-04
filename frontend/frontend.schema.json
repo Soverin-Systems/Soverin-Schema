@@ -1,0 +1,204 @@
+{
+  "frontendSchema": {
+    "meta": {
+      "appId": "sovereign_desktop_shell",
+      "version": "1.0.0",
+      "architecture": "local_first_event_driven",
+      "identityFirst": true,
+      "jsonflowCentric": true
+    },
+
+    "identity": {
+      "activeIdentity": {
+        "did": "string",
+        "publicKey": "string",
+        "address": "string",
+        "status": "active | revoked | rotating",
+        "lastRotation": "timestamp",
+        "vaultPointer": "vault://identity/signing-key",
+        "capabilities": [
+          "sign",
+          "encrypt",
+          "decrypt",
+          "authenticate",
+          "fhe",
+          "p2p"
+        ]
+      },
+      "identityEvents": {
+        "stream": "identity://events",
+        "bufferSize": 1000,
+        "persist": true
+      }
+    },
+
+    "services": {
+      "ipfs": {
+        "status": "running | stopped | degraded",
+        "peerId": "string",
+        "storageUsed": "number",
+        "storageLimit": "number",
+        "pinnedObjects": "number",
+        "pubsubChannels": ["string"],
+        "bootstrapNodes": ["string"],
+        "lastSync": "timestamp"
+      },
+
+      "ollama": {
+        "status": "running | stopped | loading",
+        "activeModel": "string",
+        "availableModels": ["string"],
+        "gpuEnabled": "boolean",
+        "vramUsage": "number",
+        "lastInferenceTime": "timestamp"
+      },
+
+      "wallet": {
+        "status": "unlocked | locked",
+        "activeChain": "ethereum | solana | custom",
+        "balances": {
+          "chain": "string",
+          "tokens": [
+            {
+              "symbol": "string",
+              "balance": "string",
+              "address": "string"
+            }
+          ]
+        },
+        "pendingTx": [
+          {
+            "txId": "string",
+            "chain": "string",
+            "status": "pending | confirmed | failed"
+          }
+        ]
+      },
+
+      "p2p": {
+        "status": "online | offline",
+        "transport": ["webrtc", "tcp", "libp2p"],
+        "connectedPeers": "number",
+        "peerList": [
+          {
+            "peerId": "string",
+            "latencyMs": "number",
+            "lastSeen": "timestamp"
+          }
+        ]
+      }
+    },
+
+    "jsonflow": {
+      "activeWorkflow": {
+        "workflowId": "string",
+        "name": "string",
+        "state": "idle | running | paused | failed | completed",
+        "currentStep": "string",
+        "stepHistory": [
+          {
+            "stepId": "string",
+            "status": "ok | error",
+            "durationMs": "number",
+            "timestamp": "timestamp"
+          }
+        ]
+      },
+
+      "workflowDesigner": {
+        "nodes": [
+          {
+            "id": "string",
+            "type": "crypto_sign | ipfs_add | event_emit | vault_get | vault_set | ai_inference | blockchain_tx | router",
+            "x": "number",
+            "y": "number",
+            "config": "object"
+          }
+        ],
+        "edges": [
+          {
+            "from": "string",
+            "to": "string"
+          }
+        ]
+      }
+    },
+
+    "ui": {
+      "layout": {
+        "shellMode": "desktop",
+        "theme": "dark_terminal",
+        "panels": {
+          "left": ["identity", "wallet", "services"],
+          "center": ["workflow_designer", "execution_view"],
+          "right": ["logs", "event_stream"]
+        }
+      },
+
+      "dashboard": {
+        "serviceCards": [
+          "ipfs",
+          "ollama",
+          "wallet",
+          "p2p",
+          "jsonflow"
+        ],
+        "refreshIntervalMs": 1000
+      },
+
+      "workflowStudio": {
+        "canvas": {
+          "grid": true,
+          "snapToGrid": true,
+          "minZoom": 0.5,
+          "maxZoom": 3
+        },
+        "executionPanel": {
+          "showLiveLogs": true,
+          "stepHighlighting": true
+        }
+      },
+
+      "storageBrowser": {
+        "view": "table | graph",
+        "showPinnedOnly": false,
+        "search": "string"
+      },
+
+      "aiPanel": {
+        "modelSelector": true,
+        "streamingOutput": true,
+        "showEmbeddings": true
+      },
+
+      "networkView": {
+        "visualization": "mesh",
+        "realTime": true
+      },
+
+      "eventStream": {
+        "channels": [
+          "identity://events",
+          "jsonflow://events",
+          "ipfs://pubsub",
+          "p2p://mesh"
+        ],
+        "retention": "7d"
+      },
+
+      "logs": {
+        "level": "debug | info | warn | error",
+        "retention": "30d"
+      }
+    },
+
+    "settings": {
+      "bootstrapNodes": ["string"],
+      "autoStartServices": true,
+      "localOnlyMode": false,
+      "encryptAllLocalStorage": true,
+      "defaultChain": "ethereum",
+      "defaultAIModel": "ollama:latest"
+    }
+  }
+}
