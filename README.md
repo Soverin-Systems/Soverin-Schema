@@ -1,4 +1,4 @@
-# JSONFlow
+# Soverin Schema is JSONFlow
 
 **JSONFlow** is a powerful, schema-driven Domain-Specific Language (DSL) platform for orchestrating interoperable workflows across diverse domains, including blockchain, artificial intelligence (AI), natural language processing (NLP), quantum computing, gaming, and user interface (UI) development. By leveraging JSON schemas, JSONFlow enables developers to define complex workflows that integrate cutting-edge technologies, automate code generation, and ensure secure, modular, and extensible application logic.
 
